@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="note_title_text_view" />
+    <item type="id" name="note_content_text_view" />
+    <item type="id" name="note_timestamp_text_view" />
+    <item type="id" name="note_share_button" />
+</resources>

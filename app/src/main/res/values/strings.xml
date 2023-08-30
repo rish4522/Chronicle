@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Chronicle</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password">Password</string>
+    <string name="email_id">Email Id</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="login">Login</string>
+    <string name="i_agree_the_terms_and_conditions">I Agree the Terms and Conditions</string>
+    <string name="create_account">Create Account</string>
+    <string name="login_btn">Login</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="create_account_link">Create Account</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="delete_note">Delete Note</string>
+    <string name="dear_diary">Dear Diary</string>
+    <string name="delete_note_icon">Delete Note</string>
+    <string name="delete">Delete</string>
+    <string name="favorite">Favorite</string>
+    <string name="share">Share</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_button">Menu Button</string>
+    <string name="favorite_icon">Favorite Icon</string>
+</resources>

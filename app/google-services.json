@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "765705301509",
+    "project_id": "chronicle-95066",
+    "storage_bucket": "chronicle-95066.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765705301509:android:b285480b513d13b173f66c",
+        "android_client_info": {
+          "package_name": "com.example.chronicle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "765705301509-o0v9cb6oqe6h3t5c5hokprvjc1utfl7v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwL9XU5lvSgMuW8Ri6bVwC1E2VwnbszpY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "765705301509-o0v9cb6oqe6h3t5c5hokprvjc1utfl7v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
