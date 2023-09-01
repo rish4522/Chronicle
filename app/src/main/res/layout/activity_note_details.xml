@@ -40,14 +40,51 @@
         android:layout_below="@id/title_bar_layout"
         android:layout_marginVertical="26dp"
         android:layout_marginTop="0dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="@color/white"
+        android:background="@drawable/background_texture"
         android:orientation="vertical"
         android:padding="16dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/time_picker"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:onClick="showTimePickerDialog" android:src="@drawable/baseline_access_time_filled_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                tools:ignore="UsingOnClickInXml" />
+
+            <TextView
+                android:id="@+id/time_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/playfair_display"
+                android:hint="hh:mm"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="22sp" />
+
+            <ImageButton
+                android:id="@+id/mood_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/happy"
+                android:scaleType="centerCrop"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        </LinearLayout>
+
+
+
         <EditText
             android:id="@+id/notes_title_text"
-            android:layout_width="match_parent"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="8dp"
             android:fontFamily="@font/calligraffitti"
@@ -59,23 +96,25 @@
 
         <EditText
             android:id="@+id/notes_content_text"
-            android:layout_width="347dp"
-            android:layout_height="270dp"
+            android:layout_width="349dp"
+            android:layout_height="229dp"
             android:layout_marginVertical="8dp"
-            android:fontFamily="@font/calligraffitti"
+            android:fontFamily="cursive"
             android:gravity="top"
             android:hint="@string/dear_diary"
             android:minLines="100"
             android:padding="12dp"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/note_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+            android:layout_width="221dp"
+            android:layout_height="139dp"
+            android:scaleType="fitCenter"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"
+            android:layout_marginStart="70dp"/>
 
         <ImageView
             android:id="@+id/selected_image_view"

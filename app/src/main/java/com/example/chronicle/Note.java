@@ -2,12 +2,16 @@ package com.example.chronicle;
 
 import com.google.firebase.Timestamp;
 
+import java.util.Date;
+
 public class Note {
     String title;
     String content;
     Timestamp timestamp;
     private boolean isFavorite;
     private String imageUrl;
+    private String selectedTime;
+    private int selectedMood;
 
 
     public Note() {
@@ -50,6 +54,19 @@ public class Note {
     }
     public String getImageUrl() {
         return imageUrl;
+    }
+    public String getSelectedTime() {
+        return selectedTime;
+    }
+    public void setSelectedTime(String selectedTime) {
+        this.selectedTime = selectedTime;
+    }
+    public int getSelectedMood() {
+        return selectedMood;
+    }
+
+    public void setSelectedMood(int selectedMood) {
+        this.selectedMood = selectedMood;
     }
 
 }

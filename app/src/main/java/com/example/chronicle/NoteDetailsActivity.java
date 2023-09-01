@@ -6,15 +6,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.Timestamp;
@@ -22,6 +27,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.Calendar;
 
 public class NoteDetailsActivity extends AppCompatActivity {
 
@@ -35,6 +42,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private Uri selectedImageUri;
+    private String selectedTime = "";
+    private Note note;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
         deleteNoteIcon = findViewById(R.id.delete_note_icon);
         noteImageView = findViewById(R.id.note_image_view);
 
+        note = new Note();
+
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
@@ -56,6 +67,15 @@ public class NoteDetailsActivity extends AppCompatActivity {
                     }
                 });
 
+        ImageButton moodIconImageView = findViewById(R.id.mood_icon);
+        moodIconImageView.setOnClickListener(v -> showMoodSelectionDialog());
+
+        int selectedMoodIcon = getSelectedMoodFromSharedPreferences();
+        moodIconImageView.setImageResource(selectedMoodIcon);
+
+        // Set the selected mood in your Note object
+        note.setSelectedMood(selectedMoodIcon);
+
         title = getIntent().getStringExtra("title");
         content = getIntent().getStringExtra("content");
         docId = getIntent().getStringExtra("docId");
@@ -64,6 +84,12 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
         titleEditText.setText(title);
         contentEditText.setText(content);
+
+        selectedTime = getSelectedTimeFromSharedPreferences();
+        if (!selectedTime.isEmpty()) {
+            TextView timeTextView = findViewById(R.id.time_text_view);
+            timeTextView.setText(selectedTime);
+        }
 
         if (isEditMode) {
             // Retrieve the imageUrl from Firestore and set it to selectedImageUri
@@ -75,12 +101,17 @@ public class NoteDetailsActivity extends AppCompatActivity {
                         Note note = document.toObject(Note.class);
                         if (note != null && note.getImageUrl() != null) {
                             selectedImageUri = Uri.parse(note.getImageUrl());
-
+                            selectedTime = note.getSelectedTime();
+                            updateSelectedTime(selectedTime);
                             // Log the retrieved imageUrl
-                            Log.d("ImageUrl", "Retrieved Image URL: " + selectedImageUri.toString());
+//                            Log.d("ImageUrl", "Retrieved Image URL: " + selectedImageUri.toString());
+                            TextView timeTextView = findViewById(R.id.time_text_view); // Replace with your TextView
+                            timeTextView.setText(selectedTime);
+                            timeTextView.invalidate();
 
                             // Load image using Glide if imageUrl is available
                             loadImageIntoImageView(selectedImageUri);
+                            showTimePickerDialog(null);
                         }
                     }
                 } else {
@@ -99,6 +130,18 @@ public class NoteDetailsActivity extends AppCompatActivity {
         deleteNoteIcon.setOnClickListener(v -> showDeleteConfirmationDialog());
         ImageButton insertImageBtn = findViewById(R.id.insert_image_btn);
         insertImageBtn.setOnClickListener(v -> openImagePicker());
+    }
+
+    private void saveSelectedTimeToSharedPreferences(String time) {
+        SharedPreferences sharedPreferences = getSharedPreferences("NoteDetailsPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("selectedTime", time);
+        editor.apply();
+    }
+
+    private String getSelectedTimeFromSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("NoteDetailsPrefs", MODE_PRIVATE);
+        return sharedPreferences.getString("selectedTime", "");
     }
 
     private void loadImageIntoImageView(Uri imageUri) {
@@ -128,17 +171,24 @@ private void showImageDeleteConfirmationDialog() {
     private void saveNote() {
         String noteTitle = titleEditText.getText().toString();
         String noteContent = contentEditText.getText().toString();
-        if (noteTitle.isEmpty()) {
-            titleEditText.setError("Title is required");
-            return;
-        }
         Note note = new Note();
         note.setTitle(noteTitle);
         note.setContent(noteContent);
         note.setTimestamp(Timestamp.now());
 
+        if (noteTitle.isEmpty()) {
+            titleEditText.setError("Title is required");
+            return;
+        }
+
+        if (!selectedTime.isEmpty()) {
+            note.setSelectedTime(selectedTime);
+            noteContent += "\n\nTime: " + selectedTime;
+        }
+
         saveNoteToFirebase(note);
     }
+
 
     private void saveNoteToFirebase(Note note) {
         DocumentReference documentReference;
@@ -149,6 +199,7 @@ private void showImageDeleteConfirmationDialog() {
         }
         note.setFavorite(false);
         note.setTimestamp(Timestamp.now());
+        note.setSelectedTime(selectedTime);
         if (selectedImageUri != null) {
             uploadImageAndSaveNote(documentReference, note);
         } else {
@@ -214,5 +265,79 @@ private void showImageDeleteConfirmationDialog() {
                 utility.showToast(NoteDetailsActivity.this, "Failed to add Note");
             }
         });
+    }
+
+    // Method to show the time picker dialog
+    public void showTimePickerDialog(View view) {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // Handle the selected time
+                        selectedTime = hourOfDay + ":" + minute;
+                        updateSelectedTime(selectedTime);
+
+                        saveSelectedTimeToSharedPreferences(selectedTime);
+
+                        TextView timeTextView = findViewById(R.id.time_text_view);
+                        timeTextView.setText(selectedTime);
+//                        displaySelectedTime(selectedTime);
+                        // Do something with the selected time (e.g., update UI)
+//                        TextView timeTextView = findViewById(R.id.time_text_view); // Replace with your TextView
+//                        timeTextView.setText(selectedTime);
+                    }
+                },
+                hour,
+                minute,
+                DateFormat.is24HourFormat(this)
+        );
+
+        timePickerDialog.show();
+    }
+    private void updateSelectedTime(String time) {
+        selectedTime = time;
+        TextView timeTextView = findViewById(R.id.time_text_view);
+        timeTextView.setText(selectedTime);
+        timeTextView.invalidate();
+    }
+
+    private void saveSelectedMoodToSharedPreferences(int selectedMoodIcon) {
+        SharedPreferences sharedPreferences = getSharedPreferences("NoteDetailsPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("selectedMoodIcon", selectedMoodIcon);
+        editor.apply();
+    }
+
+    // Retrieve the selected mood from SharedPreferences
+    private int getSelectedMoodFromSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("NoteDetailsPrefs", MODE_PRIVATE);
+        return sharedPreferences.getInt("selectedMoodIcon", R.drawable.happy);
+    }
+
+    private void showMoodSelectionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Mood");
+
+        String[] moodOptions = {"Happy", "Sad", "Angry"};
+        int[] moodIcons = {R.drawable.happy, R.drawable.sad, R.drawable.angry};
+
+        builder.setItems(moodOptions, (dialog, which) -> {
+            // Update the mood icon when an option is selected
+            int selectedMoodIcon = moodIcons[which];
+            ImageButton moodIconImageView = findViewById(R.id.mood_icon);
+            moodIconImageView.setImageResource(selectedMoodIcon);
+
+            saveSelectedMoodToSharedPreferences(selectedMoodIcon);
+            // Update the selected mood in your Note object
+            note.setSelectedMood(selectedMoodIcon);
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
