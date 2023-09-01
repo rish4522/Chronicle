@@ -27,6 +27,19 @@
             android:src="@drawable/baseline_done_24"
             app:tint="@color/white" />
 
+        <ImageButton
+            android:id="@+id/edit_mode_btn"
+            android:layout_width="52dp"
+            android:layout_height="46dp"
+            android:layout_alignEnd="@+id/save_note_btn"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="39dp"
+            android:layout_marginBottom="22dp"
+            android:layout_toEndOf="@+id/addNewEntry"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/baseline_edit_note_24" />
+
         <ImageView
             android:id="@+id/addNewEntry"
             android:layout_width="270dp"
@@ -81,7 +94,6 @@
         </LinearLayout>
 
 
-
         <EditText
             android:id="@+id/notes_title_text"
             android:layout_width="343dp"
@@ -90,7 +102,7 @@
             android:fontFamily="@font/calligraffitti"
             android:hint="Title"
             android:padding="12dp"
-            android:textColor="@color/black"
+            android:textColor="@color/saddle_brown"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -104,17 +116,17 @@
             android:hint="@string/dear_diary"
             android:minLines="100"
             android:padding="12dp"
-            android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textColor="@color/saddle_brown"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/note_image_view"
-            android:layout_width="221dp"
-            android:layout_height="139dp"
+            android:layout_width="215dp"
+            android:layout_height="118dp"
+            android:layout_marginStart="70dp"
             android:scaleType="fitCenter"
-            tools:srcCompat="@tools:sample/backgrounds/scenic"
-            android:layout_marginStart="70dp"/>
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
         <ImageView
             android:id="@+id/selected_image_view"

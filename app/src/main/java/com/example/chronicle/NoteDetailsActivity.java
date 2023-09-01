@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,13 +39,15 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private String title, content, docId;
     private boolean isEditMode = false;
 
-    private ImageButton deleteNoteIcon;
+    private ImageButton deleteNoteIcon, editModeBtn;
     private static final int PICK_IMAGE_REQUEST = 1;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private Uri selectedImageUri;
     private String selectedTime = "";
     private Note note;
 
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
         saveNoteBtn = findViewById(R.id.save_note_btn);
         deleteNoteIcon = findViewById(R.id.delete_note_icon);
         noteImageView = findViewById(R.id.note_image_view);
+        editModeBtn = findViewById(R.id.edit_mode_btn);
+        editModeBtn.setOnClickListener(v -> toggleEditMode());
 
         note = new Note();
 
@@ -118,6 +123,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
                     Log.d("ImageUrl", "Failed to retrieve Image URL");
                 }
             });
+            setReadOnlyMode();
         }
 
         noteImageView.setOnClickListener(v -> openImagePicker());
@@ -130,6 +136,43 @@ public class NoteDetailsActivity extends AppCompatActivity {
         deleteNoteIcon.setOnClickListener(v -> showDeleteConfirmationDialog());
         ImageButton insertImageBtn = findViewById(R.id.insert_image_btn);
         insertImageBtn.setOnClickListener(v -> openImagePicker());
+    }
+
+    private void toggleEditMode(){
+        isEditMode = !isEditMode;
+        if (isEditMode){
+            setEditMode();
+        }
+        else {
+            setReadOnlyMode();
+        }
+    }
+
+    private void setReadOnlyMode(){
+        titleEditText.setEnabled(false);
+        contentEditText.setEnabled(false);
+        saveNoteBtn.setVisibility(View.GONE);
+        editModeBtn.setImageResource(R.drawable.baseline_edit_note_24);
+
+        ImageButton timeIcon = findViewById(R.id.time_picker);
+        timeIcon.setEnabled(false);
+        ImageButton imageIcon = findViewById(R.id.insert_image_btn);
+        imageIcon.setEnabled(false);
+        ImageButton moodIcon = findViewById(R.id.mood_icon);
+        moodIcon.setEnabled(false);
+    }
+
+    private void setEditMode() {
+        titleEditText.setEnabled(true);
+        contentEditText.setEnabled(true);
+        saveNoteBtn.setVisibility(View.VISIBLE);
+//        editModeBtn.setImageResource(R.drawable.baseline_done_24);
+        ImageButton timeIcon = findViewById(R.id.time_picker);
+        timeIcon.setEnabled(true);
+        ImageButton imageIcon = findViewById(R.id.insert_image_btn);
+        imageIcon.setEnabled(true);
+        ImageButton moodIcon = findViewById(R.id.mood_icon);
+        moodIcon.setEnabled(true);
     }
 
     private void saveSelectedTimeToSharedPreferences(String time) {
@@ -221,10 +264,10 @@ private void showImageDeleteConfirmationDialog() {
         DocumentReference documentReference = utility.getCollectionReferenceForNotes().document(docId);
         documentReference.delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                utility.showToast(NoteDetailsActivity.this, "Note deleted successfully");
+                utility.showToast(NoteDetailsActivity.this, "Entry deleted successfully");
                 finish();
             } else {
-                utility.showToast(NoteDetailsActivity.this, "Failed to delete Note");
+                utility.showToast(NoteDetailsActivity.this, "Failed to delete Entry");
             }
         });
     }
@@ -248,10 +291,10 @@ private void showImageDeleteConfirmationDialog() {
     private void saveNoteWithImage(DocumentReference documentReference, Note note) {
         documentReference.set(note).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                utility.showToast(NoteDetailsActivity.this, "Note added successfully");
+                utility.showToast(NoteDetailsActivity.this, "Entry added successfully");
                 finish();
             } else {
-                utility.showToast(NoteDetailsActivity.this, "Failed to add Note");
+                utility.showToast(NoteDetailsActivity.this, "Failed to add Entry");
             }
         });
     }
@@ -259,10 +302,10 @@ private void showImageDeleteConfirmationDialog() {
     private void saveNoteWithNoImage(DocumentReference documentReference, Note note) {
         documentReference.set(note).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                utility.showToast(NoteDetailsActivity.this, "Note added successfully");
+                utility.showToast(NoteDetailsActivity.this, "Entry added successfully");
                 finish();
             } else {
-                utility.showToast(NoteDetailsActivity.this, "Failed to add Note");
+                utility.showToast(NoteDetailsActivity.this, "Failed to add Entry");
             }
         });
     }
